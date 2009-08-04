@@ -1,9 +1,15 @@
 # Go to http://wiki.merbivore.com/pages/init-rb
- 
+
 require 'config/dependencies.rb'
+require 'openid/util'
+
 unless defined?(Chef)
-  gem "chef", "=" + CHEF_SERVER_VERSION if CHEF_SERVER_VERSION
-  require 'chef'  
+  begin
+    gem "chef", "=" + CHEF_SERVER_VERSION if CHEF_SERVER_VERSION
+    require 'chef'
+  rescue LoadError
+    require 'chef'
+  end
 end
 
 use_test :rspec

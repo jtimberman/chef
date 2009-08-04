@@ -37,10 +37,16 @@ ObjectSpace.each_object(Gem::Specification) do |gem|
   break
 end
 
+CHEF_SERVER_VERSION = "0.7.4" unless defined?(CHEF_SERVER_VERSION)
+
 # Ensure the chef gem we load is the same version as the chef server
 unless defined?(Chef)
-  gem "chef", "=" + CHEF_SERVER_VERSION if CHEF_SERVER_VERSION
-  require 'chef'  
+  begin
+    gem "chef", "=" + CHEF_SERVER_VERSION if CHEF_SERVER_VERSION
+    require 'chef'
+  rescue LoadError
+    require 'chef'
+  end
 end
 
 Dir.chdir File.join(File.dirname(__FILE__),"..")
