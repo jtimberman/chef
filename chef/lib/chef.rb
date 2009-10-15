@@ -27,14 +27,14 @@ require 'chef/config'
 Dir[File.join(File.dirname(__FILE__), 'chef/mixin/**/*.rb')].sort.each { |lib| require lib }
 
 class Chef
-  VERSION = '0.7.12'
+  VERSION = '0.8.0'
 end
 
 # Adds a Dir.glob to Ruby 1.8.5, for compat
-if RUBY_VERSION < "1.8.6" 
-  class Dir 
-    class << self 
-      alias_method :glob_, :glob 
+if RUBY_VERSION < "1.8.6"
+  class Dir
+    class << self
+      alias_method :glob_, :glob
       def glob(pattern, flags=0)
         raise ArgumentError unless (
           !pattern.nil? and (
@@ -43,7 +43,7 @@ if RUBY_VERSION < "1.8.6"
         )
         [pattern].flatten.inject([]) { |r, p| r + glob_(p, flags) }
       end
-      alias_method :[], :glob 
-    end 
-  end 
-end 
+      alias_method :[], :glob
+    end
+  end
+end

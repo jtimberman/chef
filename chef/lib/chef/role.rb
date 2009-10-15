@@ -30,7 +30,7 @@ class Chef
     include Chef::Mixin::ParamsValidate
     
     DESIGN_DOCUMENT = {
-      "version" => 3,
+      "version" => 6,
       "language" => "javascript",
       "views" => {
         "all" => {
@@ -50,21 +50,22 @@ class Chef
             }
           }
           EOJS
-        },
-      },
+        }
+      }
     }
 
-    attr_accessor :couchdb_rev
+    attr_accessor :couchdb_rev, :couchdb_id
     
     # Create a new Chef::Role object.
-    def initialize()
+    def initialize
       @name = '' 
       @description = '' 
       @default_attributes = Mash.new
       @override_attributes = Mash.new
       @recipes = Array.new 
       @couchdb_rev = nil
-      @couchdb = Chef::CouchDB.new
+      @couchdb_id = nil
+      @couchdb = Chef::CouchDB.new 
     end
 
     def name(arg=nil) 
@@ -139,23 +140,40 @@ class Chef
       role.override_attributes(o["override_attributes"])
       role.recipes(o["recipes"])
       role.couchdb_rev = o["_rev"] if o.has_key?("_rev")
+      role.couchdb_id = o["_id"] if o.has_key?("_id")
       role 
     end
     
     # List all the Chef::Role objects in the CouchDB.  If inflate is set to true, you will get
     # the full list of all Roles, fully inflated.
-    def self.list(inflate=false)
-      rs = Chef::CouchDB.new.list("roles", inflate)
+    def self.cdb_list(inflate=false)
+      couchdb = Chef::CouchDB.new
+      rs = couchdb.list("roles", inflate)
       if inflate
         rs["rows"].collect { |r| r["value"] }
       else
         rs["rows"].collect { |r| r["key"] }
       end
     end
+
+    # Get the list of all roles from the API.
+    def self.list(inflate=false)
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      if inflate
+        response = Hash.new
+        Chef::Search::Query.new.search(:role) do |n|
+          response[n.name] = n
+        end
+        response
+      else
+        r.get_rest("roles")
+      end
+    end
     
     # Load a role by name from CouchDB
     def self.load(name)
-      Chef::CouchDB.new.load("role", name)
+      couchdb = Chef::CouchDB.new
+      couchdb.load("role", name)
     end
     
     # Remove this role from the CouchDB
@@ -186,7 +204,8 @@ class Chef
     
     # Set up our CouchDB design document
     def self.create_design_document
-      Chef::CouchDB.new.create_design_document("roles", DESIGN_DOCUMENT)
+      couchdb = Chef::CouchDB.new
+      couchdb.create_design_document("roles", DESIGN_DOCUMENT)
     end
     
     # As a string
@@ -220,7 +239,7 @@ class Chef
           couch_role = Chef::Role.load(short_name)
           r.couchdb_rev = couch_role.couchdb_rev
           Chef::Log.debug("Replacing role #{short_name} with data from #{role_file}")
-        rescue Net::HTTPServerException
+        rescue Chef::Exceptions::CouchDBNotFound 
           Chef::Log.debug("Creating role #{short_name} with data from #{role_file}")
         end
         r.save
