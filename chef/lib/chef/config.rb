@@ -19,6 +19,7 @@
 
 require 'chef/log'
 require 'mixlib/config'
+require 'openssl'
 
 class Chef
   class Config
@@ -34,9 +35,10 @@ class Chef
       if Chef::FileCache.has_key?("chef_server_cookie_id")
         newkey = Chef::FileCache.load("chef_server_cookie_id")
       else
-        chars = ("a".."z").to_a + ("A".."Z").to_a + ("0".."9").to_a
         newkey = ""
-        40.times { |i| newkey << chars[rand(chars.size-1)] }
+        while newkey.length < 40
+          newkey << OpenSSL::Random.random_bytes(1).gsub(/\W/, '')
+        end
         Chef::FileCache.store("chef_server_cookie_id", newkey)
       end
       newkey
@@ -44,7 +46,7 @@ class Chef
 
 
     # Override the config dispatch to set the value of multiple server options simultaneously
-    # 
+    #
     # === Parameters
     # url<String>:: String to be set for all of the chef-server-api URL's
     #
@@ -56,16 +58,16 @@ class Chef
           :remotefile_url,
           :search_url,
           :chef_server_url,
-          :role_url ].each do |u| 
+          :role_url ].each do |u|
             c[u] = url
         end
       end
       url
     end
 
-    # When you are using ActiveSupport, they monkey-patch 'daemonize' into Kernel.  
+    # When you are using ActiveSupport, they monkey-patch 'daemonize' into Kernel.
     # So while this is basically identical to what method_missing would do, we pull
-    # it up here and get a real method written so that things get dispatched 
+    # it up here and get a real method written so that things get dispatched
     # properly.
     config_attr_writer :daemonize do |v|
       configure do |c|
@@ -120,7 +122,7 @@ class Chef
     node_name nil
     node_path "/var/chef/node"
     openid_cstore_couchdb false
-    openid_cstore_path "/var/chef/openid/cstore"    
+    openid_cstore_path "/var/chef/openid/cstore"
     openid_providers nil
     openid_store_couchdb false
     openid_store_path "/var/chef/openid/db"
@@ -165,7 +167,7 @@ class Chef
     amqp_user 'chef'
     amqp_pass 'testing'
     amqp_vhost '/chef'
-    # Setting this to a UUID string also makes the queue durable 
+    # Setting this to a UUID string also makes the queue durable
     # (persist across rabbitmq restarts)
     amqp_consumer_id nil
 
