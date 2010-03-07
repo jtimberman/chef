@@ -75,7 +75,7 @@ class Chef
           :description => "Daemonize the process",
           :proc => lambda { |p| true }
 
-        option :pidfile,
+        option :pid_file,
           :short => "-P PIDFILE",
           :long => "--pidfile PIDFILE",
           :description => "PID file to use.",
