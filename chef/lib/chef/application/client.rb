@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,14 +25,14 @@ require 'chef/rest'
 
 
 class Chef::Application::Client < Chef::Application
-  
-  option :config_file, 
+
+  option :config_file,
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
     :default => "/etc/chef/client.rb",
     :description => "The configuration file to use"
 
-  option :log_level, 
+  option :log_level,
     :short        => "-l LEVEL",
     :long         => "--log_level LEVEL",
     :description  => "Set the log level (debug, info, warn, error, fatal)",
@@ -58,7 +58,7 @@ class Chef::Application::Client < Chef::Application
     :boolean      => true,
     :show_options => true,
     :exit         => 0
-    
+
   option :user,
     :short => "-u USER",
     :long => "--user USER",
@@ -76,6 +76,12 @@ class Chef::Application::Client < Chef::Application
     :long => "--daemonize",
     :description => "Daemonize the process",
     :proc => lambda { |p| true }
+
+  option :pidfile,
+    :short => "-P PIDFILE",
+    :long => "--pidfile PIDFILE",
+    :description => "PID file to use.",
+    :proc => nil
 
   option :interval,
     :short => "-i SECONDS",
@@ -112,7 +118,7 @@ class Chef::Application::Client < Chef::Application
     :long => "--token TOKEN",
     :description => "Set the openid validation token",
     :proc => nil
-  
+
   option :version,
     :short        => "-v",
     :long         => "--version",
@@ -127,14 +133,14 @@ class Chef::Application::Client < Chef::Application
     @chef_client = nil
     @chef_client_json = nil
   end
-  
+
   # Reconfigure the chef client
   # Re-open the JSON attributes and load them into the node
-  def reconfigure 
-    super 
+  def reconfigure
+    super
 
     Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
-   
+
     if Chef::Config[:daemonize]
       Chef::Config[:interval] ||= 1800
     end
@@ -171,7 +177,7 @@ class Chef::Application::Client < Chef::Application
     super
     Mixlib::Authentication::Log.logger = Chef::Log.logger
   end
-  
+
   # Setup an instance of the chef client
   # Why is this so ugly? surely the client should just read out of chef::config instead of needing the values to be assigned like this..
   def setup_application
@@ -180,9 +186,9 @@ class Chef::Application::Client < Chef::Application
     @chef_client = Chef::Client.new
     @chef_client.json_attribs = @chef_client_json
     @chef_client.validation_token = Chef::Config[:validation_token]
-    @chef_client.node_name = Chef::Config[:node_name]   
+    @chef_client.node_name = Chef::Config[:node_name]
   end
-  
+
   # Run the chef client, optionally daemonizing or looping at intervals.
   def run_application
     if Chef::Config[:version]
@@ -192,7 +198,7 @@ class Chef::Application::Client < Chef::Application
     if Chef::Config[:daemonize]
       Chef::Daemon.daemonize("chef-client")
     end
-    
+
     loop do
       begin
         if Chef::Config[:splay]
@@ -202,7 +208,7 @@ class Chef::Application::Client < Chef::Application
         end
 
         @chef_client.run
-        
+
         if Chef::Config[:interval]
           Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
           sleep Chef::Config[:interval]

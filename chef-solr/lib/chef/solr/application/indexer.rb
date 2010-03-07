@@ -75,6 +75,12 @@ class Chef
           :description => "Daemonize the process",
           :proc => lambda { |p| true }
 
+        option :pidfile,
+          :short => "-P PIDFILE",
+          :long => "--pidfile PIDFILE",
+          :description => "PID file to use.",
+          :proc => nil
+
         option :amqp_host,
           :long => "--amqp-host HOST",
           :description => "The amqp host"
