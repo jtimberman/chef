@@ -26,8 +26,9 @@ spec = Gem::Specification.new do |s|
   ["merb-slices",
    "merb-core",
    "merb-assets",
-   "merb-helpers",
-   "thin",
+   "merb-helpers"
+  ].each { |m| s.add_dependency m, "= 1.0.15"}
+  ["thin",
    "json", 
    "uuidtools"
   ].each { |g| s.add_dependency g}

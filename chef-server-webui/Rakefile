@@ -28,8 +28,9 @@ spec = Gem::Specification.new do |s|
    "merb-haml",
    "merb-assets",
    "merb-helpers",
-   "merb-param-protection",
-   "thin",
+   "merb-param-protection"
+  ].each { |m| s.add_dependency m, "= 1.0.15"}
+  ["thin",
    "haml",
    "json",
    "ruby-openid",
