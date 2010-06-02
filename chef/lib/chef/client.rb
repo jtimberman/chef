@@ -213,6 +213,10 @@ class Chef
       Chef::Log.debug("Platform is #{platform} version #{version}")
       @node.automatic_attrs[:platform] = platform
       @node.automatic_attrs[:platform_version] = version
+      # We clear defaults and overrides, so that any deleted attributes between runs are
+      # still gone.
+      @node.default_attrs = Mash.new
+      @node.override_attrs = Mash.new
       @node
     end
    

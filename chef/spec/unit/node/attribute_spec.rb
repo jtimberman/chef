@@ -333,11 +333,11 @@ describe Chef::Node::Attribute do
     end
 
     it "should set deeply nested attribute value when auto_vivifiy_on_read is true" do
+      @attributes.set_type = :normal
       @attributes.auto_vivifiy_on_read = true
-      @attributes["longboard"]["hunters"]["comics"] = "surfing"
-      @attributes["longboard"]["hunters"]["comics"].should == "surfing"
-      @attributes.attribute["longboard"]["hunters"]["comics"].should == "surfing"
-      @attributes.override["longboard"]["hunters"]["comics"].should == "surfing"
+      @attributes["deftones"]["hunters"]["nap"] = "surfing"
+      @attributes.reset
+      @attributes.normal["deftones"]["hunters"]["nap"].should == "surfing"
     end
 
     it "should die if you try and do nested attributes that do not exist without read vivification" do
@@ -454,13 +454,6 @@ describe Chef::Node::Attribute do
       @attributes.music.mastodon = [ "dream", "still", "shining" ]
       @attributes.reset
       @attributes.music.mastodon.should == [ "dream", "still", "shining" ]
-    end
-
-    it "should honor auto-vivifiy on read" do
-      @attributes.auto_vivifiy_on_read = true
-      @attributes.rock.and.roll = "boom boom yeah"
-      @attributes.reset
-      @attributes.rock.and.roll.should == "boom boom yeah"
     end
   end
 
