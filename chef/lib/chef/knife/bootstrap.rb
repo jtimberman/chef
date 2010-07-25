@@ -64,7 +64,6 @@ class Chef
         :description => "The SSH identity file used for authentication"
 
       option :use_sudo,
-        :short => "-s",
         :long => "--sudo",
         :description => "Execute the bootstrap via sudo",
         :boolean => true
@@ -79,7 +78,7 @@ class Chef
         :long => "--run-list RUN_LIST",
         :description => "Comma separated list of roles/recipes to apply",
         :proc => lambda { |o| o.split(",") },
-        :default => nil
+        :default => []
 
       def h
         @highline ||= HighLine.new
