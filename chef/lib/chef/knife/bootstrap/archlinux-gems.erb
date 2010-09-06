@@ -1,7 +1,7 @@
 bash -c '
 if [ ! -f /usr/bin/chef-client ]; then
   pacman -Syy
-  pacman -S --noconfirm ruby ntp
+  pacman -S --noconfirm ruby ntp base-devel
   ntpdate pool.ntp.org
   gem install ohai chef --no-rdoc --no-ri --verbose <%= '--prerelease' if @config[:prerelease] %>
 fi
