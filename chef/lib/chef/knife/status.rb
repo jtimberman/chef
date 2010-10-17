@@ -17,7 +17,11 @@
 #
 
 require 'chef/knife'
-require 'highline'
+begin
+  require 'highline'
+rescue LoadError
+  Chef::Log.debug("Could not load highline, not displaying colors")
+end
 require 'chef/search/query'
 
 class Chef
@@ -32,7 +36,10 @@ class Chef
         :description => "Show the run list"
 
       def highline
-        @h ||= HighLine.new
+        begin
+          @h ||= HighLine.new
+        rescue NameError
+        end
       end
 
       def run
@@ -65,7 +72,11 @@ class Chef
             text = minutes_text
           end
 
-          highline.say("<%= color('#{text}', #{color}) %> ago, #{node.name}, #{node['platform']} #{node['platform_version']}, #{fqdn}, #{ipaddress}#{run_list}")
+          begin
+            highline.say("<%= color('#{text}', #{color}) %> ago, #{node.name}, #{node['platform']} #{node['platform_version']}, #{fqdn}, #{ipaddress}#{run_list}")
+          rescue
+            puts "#{text} ago, #{node.name}, #{node['platform']} #{node['platform_version']}, #{fqdn}, #{ipaddress}#{run_list}"
+          end
         end
 
       end
