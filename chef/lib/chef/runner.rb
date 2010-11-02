@@ -39,14 +39,6 @@ class Chef
       @delayed_actions  = []
     end
     
-    def build_provider(resource)
-      provider_class = Chef::Platform.find_provider_for_node(run_context.node, resource)
-      Chef::Log.debug("#{resource} using #{provider_class.to_s}")
-      provider = provider_class.new(resource, run_context)
-      provider.load_current_resource
-      provider
-    end
-    
     # Determine the appropriate provider for the given resource, then
     # execute it.
     def run_action(resource, action)

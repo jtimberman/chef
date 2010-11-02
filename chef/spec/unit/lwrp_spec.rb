@@ -135,8 +135,9 @@ describe "Light-weight Chef::Provider" do
     resource = Chef::Resource::LwrpFoo.new("morpheus")
     resource.monkey("bob")
     resource.provider(:lwrp_monkey_name_printer)
+    resource.run_context = @run_context
 
-    provider = @runner.build_provider(resource)
+    provider = Chef::Platform.provider_for_resource(resource)
     provider.action_twiddle_thumbs
 
     provider.monkey_name.should == "my monkey's name is 'bob'"
@@ -147,8 +148,9 @@ describe "Light-weight Chef::Provider" do
     resource = Chef::Resource::LwrpFoo.new("morpheus")
     resource.monkey("bob")
     resource.provider(:lwrp_embedded_resource_accesses_providers_scope)
+    resource.run_context = @run_context
     
-    provider = @runner.build_provider(resource)
+    provider = Chef::Platform.provider_for_resource(resource)
     provider.action_twiddle_thumbs
 
     provider.enclosed_resource.monkey.should == 'bob, the monkey'
