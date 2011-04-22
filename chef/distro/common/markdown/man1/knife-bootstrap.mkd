@@ -54,7 +54,7 @@ target node (FQDN). The following distros are supported:
 * centos5-gems
 * fedora13-gems
 * ubuntu10.04-gems
-* ubuntu10.04-apt
+* ubuntu-apt
 
 The gems installations will use RubyGems 1.3.6 and Chef installed as a
 gem. The apt installation will use the Opscode APT repository. The
