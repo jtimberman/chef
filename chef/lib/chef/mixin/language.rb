@@ -235,10 +235,14 @@ class Chef
         raise
       end
 
-      def data_bag_item(bag, item)
+      def data_bag_item(bag, item, secret = nil)
         DataBag.validate_name!(bag.to_s)
         DataBagItem.validate_id!(item)
-        DataBagItem.load(bag, item)
+        if secret && ::File.exists?(secret)
+          EncryptedDataBagItem.load(bag, item, secret)
+        else
+          DataBagItem.load(bag, item)
+        end
       rescue Exception
         Log.error("Failed to load data bag item: #{bag.inspect} #{item.inspect}")
         raise
