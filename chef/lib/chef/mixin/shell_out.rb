@@ -17,6 +17,7 @@
 
 require 'chef/shell_out'
 require 'chef/config'
+require 'rbconfig'
 
 class Chef
   module Mixin
@@ -35,6 +36,16 @@ class Chef
         cmd= shell_out(*command_args)
         cmd.error!
         cmd
+      end
+
+      def path_for(binary_name)
+        binary_files = []
+        binary_files << File.join(RbConfig::CONFIG['bindir'], "#{binary_name}#{RbConfig::CONFIG['EXEEXT']}")
+        binary_files << File.join(Gem.bindir, "#{binary_name}#{RbConfig::CONFIG['EXEEXT']}")
+        full_path = Array(binary_files).find do |path|
+          File.exists?(path)
+        end
+        full_path =~ /\s/ ? "\"#{full_path}\"" : full_path
       end
     end
   end
