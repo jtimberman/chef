@@ -71,6 +71,14 @@ class Chef
               :mdadm => Chef::Provider::Mdadm
             }
           },
+          :linuxmint   => {
+            :default => {
+              :package => Chef::Provider::Package::Apt,
+              :service => Chef::Provider::Service::Upstart,
+              :cron => Chef::Provider::Cron,
+              :mdadm => Chef::Provider::Mdadm
+            }
+          },
           :debian => {
             :default => {
               :package => Chef::Provider::Package::Apt,
