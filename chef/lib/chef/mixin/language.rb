@@ -235,11 +235,11 @@ class Chef
         raise
       end
 
-      def data_bag_item(bag, item, secret = nil)
+      def data_bag_item(bag, item, options = {})
         DataBag.validate_name!(bag.to_s)
         DataBagItem.validate_id!(item)
-        if secret && ::File.exists?(secret)
-          EncryptedDataBagItem.load(bag, item, secret)
+        if options.has_key?(:secret) && ::File.exists?(options[:secret])
+          EncryptedDataBagItem.load(bag, item, options[:secret])
         else
           DataBagItem.load(bag, item)
         end
